@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 콘텐츠 스튜디오 - 옆커폰</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="apple-touch-icon" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="../assets/css/fonts.css">
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/blog.css">
+</head>
+<body>
+  <div class="prototype-notice" role="status">
+    <p>본 프로젝트는 프로토타입이며, 실제 데이터를 사용하지 않고 동작 예시만 표현합니다. 기능은 실제로 동작하지 않습니다.</p>
+  </div>
+  <header class="site-header">
+    <a href="../" class="site-header-brand">
+      <div class="site-header-logo">
+        <img src="../assets/images/logo.png" alt="옆커폰">
+      </div>
+      <span>옆커폰 · AI 콘텐츠 스튜디오</span>
+    </a>
+    <nav class="site-header-nav">
+      <a href="../">홈</a>
+      <a href="../blog/" class="active">스튜디오</a>
+      <a href="../server/">모니터링</a>
+      <a href="../server/accounts.html">계정 관리</a>
+    </nav>
+  </header>
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-label">메뉴</div>
+          <a href="../" class="nav-item" data-icon="home">홈</a>
+          <a href="../blog/" class="nav-item active" data-icon="studio">콘텐츠 스튜디오</a>
+          <a href="../server/" class="nav-item" data-icon="monitor">실시간 모니터링</a>
+          <a href="../server/accounts.html" class="nav-item" data-icon="accounts">계정·권한 관리</a>
+        </div>
+      </nav>
+      <div class="sidebar-footer"><div class="sidebar-footer-meta">v0.1 Prototype</div></div>
+    </aside>
+
+    <main class="main-content has-step-nav">
+      <div class="page-header">
+        <h1>AI 콘텐츠 스튜디오</h1>
+        <p>형식 학습 → 지역·지점 지정 → 에셋 등록 → AI 생성 및 배포</p>
+      </div>
+
+      <div class="steps">
+        <div class="step active" data-step="1">
+          <div class="step-number">1</div>
+          <span class="step-label">형식 학습</span>
+        </div>
+        <div class="step" data-step="2">
+          <div class="step-number">2</div>
+          <span class="step-label">지역·지점</span>
+        </div>
+        <div class="step" data-step="3">
+          <div class="step-number">3</div>
+          <span class="step-label">이미지 업로드</span>
+        </div>
+        <div class="step" data-step="4">
+          <div class="step-number">4</div>
+          <span class="step-label">생성·업로드</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <!-- Step 1: Format Learning -->
+          <div class="step-panel active" data-step="1">
+            <div class="mb-16">
+              <h2 style="font-size:15px;font-weight:600;margin-bottom:4px">게시글 형식 학습</h2>
+              <p class="text-muted" style="font-size:12px">기존 블로그 게시글을 URL 또는 직접 입력으로 등록하면 AI가 형식을 학습합니다.</p>
+            </div>
+
+            <div class="input-mode-tabs">
+              <button type="button" class="input-mode-tab active" data-mode="content">내용 직접 입력</button>
+              <button type="button" class="input-mode-tab" data-mode="url">URL로 가져오기</button>
+            </div>
+
+            <div class="input-mode-panel active" id="panelContent">
+              <div class="form-group">
+                <label class="form-label" for="sampleInput">학습용 게시글</label>
+                <textarea class="form-textarea" id="sampleInput" rows="10"></textarea>
+              </div>
+              <div class="sample-list" id="sampleList"></div>
+            </div>
+
+            <div class="input-mode-panel" id="panelUrl">
+              <div class="form-group">
+                <label class="form-label" for="sampleUrl">블로그 게시글 URL</label>
+                <div class="url-input-row">
+                  <input type="url" class="form-input" id="sampleUrl" value="https://blog.naver.com/uhagodqhr94/224330649384" placeholder="https://blog.naver.com/...">
+                  <button type="button" class="btn btn-primary" id="btnFetchUrl">가져오기</button>
+                </div>
+                <p class="input-hint">네이버 블로그 URL을 등록하면 학습 데이터에 반영됩니다.</p>
+              </div>
+              <div class="url-list-section" id="urlListSection">
+                <div class="url-list-label">등록된 게시글 URL</div>
+                <ul class="url-list" id="urlList"></ul>
+              </div>
+            </div>
+
+            <div class="learn-actions">
+              <button type="button" class="btn btn-secondary btn-sm" id="btnReloadSample">샘플 초기화</button>
+              <button type="button" class="btn btn-primary" id="btnStartLearn">다시 학습</button>
+            </div>
+
+            <div class="learning-animation hidden" id="learningAnim">
+              <div class="learning-spinner"></div>
+              <span class="learning-text">게시글 분석 중...</span>
+            </div>
+          </div>
+
+          <!-- Step 2: Region, Branch & Style -->
+          <div class="step-panel" data-step="2">
+            <h2 style="font-size:15px;font-weight:600;margin-bottom:8px">지역 및 지점 지정</h2>
+
+            <div class="admin-notice">
+              <strong>관리자 설정 안내</strong>
+              <p>콘텐츠 생성은 <b>관리자가 사전에 설정한 지점</b>만 선택할 수 있습니다. 신규 지점 추가 및 운영 지역 변경은 관리자 페이지에서 설정해야 합니다.</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">시·도 선택</label>
+              <div class="region-grid" id="cityGrid"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">구·군 선택</label>
+              <div class="region-grid" id="districtGrid">
+                <p class="region-placeholder">시·도를 먼저 선택해주세요</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">지점 선택</label>
+              <div class="branch-grid" id="branchGrid">
+                <p class="region-placeholder">구·군을 먼저 선택해주세요</p>
+              </div>
+              <p class="branch-empty hidden" id="branchEmpty">
+                이 지역에 설정된 지점이 없습니다. 관리자에게 지점 등록을 요청해주세요.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">게시글 스타일</label>
+              <div class="style-options" id="styleOptions"></div>
+            </div>
+          </div>
+
+          <!-- Step 3: Image Upload -->
+          <div class="step-panel" data-step="3">
+            <h2 style="font-size:15px;font-weight:600;margin-bottom:8px">이미지 업로드</h2>
+            <p class="text-muted mb-16" style="font-size:12px">게시글에 첨부할 이미지를 파일 또는 URL로 등록하세요. (선택 사항)</p>
+
+            <div class="input-mode-tabs">
+              <button type="button" class="input-mode-tab active" data-image-mode="file">파일 업로드</button>
+              <button type="button" class="input-mode-tab" data-image-mode="url">URL 입력</button>
+            </div>
+
+            <div class="input-mode-panel active" id="imagePanelFile">
+              <div class="upload-zone" id="uploadZone">
+                <p class="upload-zone-title">이미지 파일 선택</p>
+                <span>드래그하거나 클릭하여 업로드 · JPG, PNG, WEBP</span>
+              </div>
+              <input type="file" id="fileInput" accept="image/*" multiple hidden>
+            </div>
+
+            <div class="input-mode-panel" id="imagePanelUrl">
+              <div class="form-group">
+                <label class="form-label" for="imageUrlInput">이미지 URL</label>
+                <div class="url-input-row">
+                  <input type="url" class="form-input" id="imageUrlInput" placeholder="https://example.com/image.jpg">
+                  <button type="button" class="btn btn-primary" id="btnAddImageUrl">추가</button>
+                </div>
+                <p class="input-hint">이미지 URL을 입력하면 게시글에 첨부됩니다.</p>
+              </div>
+            </div>
+
+            <div class="image-preview-grid" id="imagePreviewGrid"></div>
+          </div>
+
+          <!-- Step 4: Generate & Upload -->
+          <div class="step-panel" data-step="4">
+            <div class="flex-between mb-16">
+              <div>
+                <h2 style="font-size:15px;font-weight:600;margin-bottom:4px">게시글 생성 및 업로드</h2>
+                <p class="text-muted" style="font-size:12px">학습된 형식에 맞춰 게시글을 생성하고 블로그에 자동 업로드합니다.</p>
+              </div>
+              <button type="button" class="btn btn-primary" id="btnGenerate">게시글 생성</button>
+            </div>
+
+            <div class="preview-panel" id="previewPanel">
+              <p class="text-muted text-center preview-placeholder">게시글 생성 버튼을 클릭하면 미리보기가 표시됩니다.</p>
+            </div>
+
+            <div class="hidden mt-16" id="uploadSection">
+              <div class="upload-notice">
+                <strong>업로드 안내</strong>
+                <p>본 웹 화면에서는 블로그에 직접 업로드할 수 없습니다. 실제 업로드는 <b>구글 확장 프로그램</b> 또는 <b>자동화 프로그램</b>을 사용해야 합니다.</p>
+              </div>
+
+              <div class="upload-actions">
+                <span class="upload-actions-label">블로그 업로드 (시뮬레이션)</span>
+                <button type="button" class="btn btn-success" id="btnUpload">업로드 시작</button>
+              </div>
+
+              <div class="hidden" id="uploadProgress">
+                <div class="progress-bar mb-16">
+                  <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+                </div>
+              </div>
+
+              <div class="upload-log hidden" id="uploadLog"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-nav-bar" id="stepNavBar">
+        <div class="step-nav-status">
+          <div class="step-nav-progress">
+            <span class="step-nav-counter" id="stepCounter">1 / 4</span>
+            <span class="step-nav-current" id="stepCurrentLabel">형식 학습</span>
+          </div>
+          <p class="step-nav-hint" id="stepHint"></p>
+        </div>
+        <div class="step-nav-buttons">
+          <button type="button" class="btn btn-secondary btn-lg step-nav-prev hidden" id="btnPrev">
+            <span class="step-nav-arrow">←</span> 이전
+          </button>
+          <button type="button" class="btn btn-primary btn-lg step-nav-next" id="btnNext">
+            <span class="step-nav-next-text">다음</span>
+            <span class="step-nav-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="post-preview-modal hidden" id="postPreviewModal" aria-hidden="true">
+    <div class="post-preview-modal-backdrop" data-close-modal></div>
+    <div class="post-preview-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="postPreviewModalTitle">
+      <div class="post-preview-modal-header">
+        <h3 class="post-preview-modal-title" id="postPreviewModalTitle"></h3>
+        <button type="button" class="post-preview-modal-close" id="btnClosePreviewModal" aria-label="닫기">×</button>
+      </div>
+      <div class="post-preview-modal-body se-viewer" id="postPreviewModalBody"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/hardcoded-post.js"></script>
+  <script src="../assets/js/blog.js"></script>
+  <script src="../assets/js/effects.js"></script>
+</body>
+</html>

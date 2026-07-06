@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>계정·권한 관리 - 옆커폰</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="apple-touch-icon" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="../assets/css/fonts.css">
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/server.css">
+  <link rel="stylesheet" href="../assets/css/accounts.css">
+</head>
+<body>
+  <div class="prototype-notice" role="status">
+    <p>본 프로젝트는 프로토타입이며, 실제 데이터를 사용하지 않고 동작 예시만 표현합니다. 기능은 실제로 동작하지 않습니다.</p>
+  </div>
+  <header class="site-header">
+    <a href="../" class="site-header-brand">
+      <div class="site-header-logo">
+        <img src="../assets/images/logo.png" alt="옆커폰">
+      </div>
+      <span>옆커폰 · 계정 관리</span>
+    </a>
+    <nav class="site-header-nav">
+      <a href="../">홈</a>
+      <a href="../blog/">스튜디오</a>
+      <a href="../server/">모니터링</a>
+      <a href="../server/accounts.html" class="active">계정 관리</a>
+    </nav>
+  </header>
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-label">관제 메뉴</div>
+          <a href="../server/#sentiment" class="nav-item" data-icon="sentiment">여론 모니터링</a>
+          <a href="../server/#keywords" class="nav-item" data-icon="keywords">키워드 노출</a>
+          <a href="../server/#cafe" class="nav-item" data-icon="cafe">공식 카페</a>
+          <a href="../server/#content" class="nav-item" data-icon="content">게시글 생성</a>
+          <a href="../server/#telegram" class="nav-item" data-icon="telegram">텔레그램 알림</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-label">관리</div>
+          <a href="../blog/" class="nav-item" data-icon="studio">콘텐츠 스튜디오</a>
+          <a href="accounts.html" class="nav-item active" data-icon="accounts">계정·권한 관리</a>
+        </div>
+      </nav>
+      <div class="sidebar-footer"><div class="sidebar-footer-meta">v0.2 Prototype</div></div>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header flex-between">
+        <div>
+          <h1>계정·권한 관리</h1>
+          <p>점주 및 관리자별 관리 등급을 부여하고 계정을 생성·수정·삭제합니다</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="btnAddAccount">+ 계정 추가</button>
+      </div>
+
+      <div class="grid-4 mb-16">
+        <div class="card stat-card">
+          <div class="stat-card-label">전체 계정</div>
+          <div class="stat-card-value" id="statTotalAccounts">-</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-card-label">본사 관리자</div>
+          <div class="stat-card-value" id="statHq">-</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-card-label">점주</div>
+          <div class="stat-card-value" id="statOwner">-</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-card-label">지점 매니저</div>
+          <div class="stat-card-value" id="statManager">-</div>
+        </div>
+      </div>
+
+      <div class="card mb-16">
+        <div class="card-header">
+          <h2>권한 등급 안내</h2>
+        </div>
+        <div class="card-body">
+          <div class="role-guide-grid" id="roleGuide"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>계정 목록</h2>
+          <div class="account-filters">
+            <select id="filterRole" class="form-select form-select-sm">
+              <option value="all">전체 등급</option>
+              <option value="hq">본사 관리자</option>
+              <option value="owner">점주</option>
+              <option value="manager">지점 매니저</option>
+            </select>
+            <input type="search" id="filterSearch" class="form-input form-input-sm" placeholder="이름·이메일 검색">
+          </div>
+        </div>
+        <div class="card-body" style="padding:0">
+          <table class="data-table" id="accountsTable">
+            <thead>
+              <tr>
+                <th>이름</th>
+                <th>이메일</th>
+                <th>등급</th>
+                <th>소속 지점</th>
+                <th>상태</th>
+                <th>마지막 접속</th>
+                <th style="width:120px"></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Account Modal -->
+  <div class="server-modal hidden" id="accountModal" aria-hidden="true">
+    <div class="server-modal-backdrop" data-close-modal></div>
+    <div class="server-modal-dialog" role="dialog" aria-modal="true">
+      <div class="server-modal-header">
+        <h3 id="accountModalTitle">계정 추가</h3>
+        <button type="button" class="server-modal-close" data-close-modal aria-label="닫기">×</button>
+      </div>
+      <form id="accountForm" class="server-modal-body">
+        <input type="hidden" id="accountId">
+        <div class="form-group">
+          <label for="accountName">이름</label>
+          <input type="text" id="accountName" class="form-input" required placeholder="홍길동">
+        </div>
+        <div class="form-group">
+          <label for="accountEmail">이메일</label>
+          <input type="email" id="accountEmail" class="form-input" required placeholder="user@yeopkeopon.com">
+        </div>
+        <div class="form-group">
+          <label for="accountRole">관리 등급</label>
+          <select id="accountRole" class="form-select" required>
+            <option value="hq">본사 관리자</option>
+            <option value="owner">점주</option>
+            <option value="manager">지점 매니저</option>
+          </select>
+        </div>
+        <div class="form-group" id="branchGroup">
+          <label for="accountBranch">소속 지점</label>
+          <select id="accountBranch" class="form-select">
+            <option value="">본사 (전체)</option>
+            <option value="강남역점">강남역점</option>
+            <option value="역삼점">역삼점</option>
+            <option value="분당정자점">분당정자점</option>
+            <option value="일산점">일산점</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="accountStatus">상태</label>
+          <select id="accountStatus" class="form-select">
+            <option value="active">활성</option>
+            <option value="inactive">비활성</option>
+          </select>
+        </div>
+      </form>
+      <div class="server-modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal>취소</button>
+        <button type="submit" form="accountForm" class="btn btn-primary" id="btnSaveAccount">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="server-modal hidden" id="deleteModal" aria-hidden="true">
+    <div class="server-modal-backdrop" data-close-modal></div>
+    <div class="server-modal-dialog" role="dialog" aria-modal="true">
+      <div class="server-modal-header">
+        <h3>계정 삭제</h3>
+        <button type="button" class="server-modal-close" data-close-modal aria-label="닫기">×</button>
+      </div>
+      <div class="server-modal-body">
+        <p id="deleteConfirmText">이 계정을 삭제하시겠습니까?</p>
+      </div>
+      <div class="server-modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal>취소</button>
+        <button type="button" class="btn btn-danger" id="btnConfirmDelete">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/accounts.js"></script>
+</body>
+</html>

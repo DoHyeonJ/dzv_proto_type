@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>실시간 모니터링 - 옆커폰</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="apple-touch-icon" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="../assets/css/fonts.css">
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/server.css">
+</head>
+<body>
+  <div class="prototype-notice" role="status">
+    <p>본 프로젝트는 프로토타입이며, 실제 데이터를 사용하지 않고 동작 예시만 표현합니다. 기능은 실제로 동작하지 않습니다.</p>
+  </div>
+  <header class="site-header">
+    <a href="../" class="site-header-brand">
+      <div class="site-header-logo">
+        <img src="../assets/images/logo.png" alt="옆커폰">
+      </div>
+      <span>옆커폰 · 실시간 모니터링</span>
+    </a>
+    <nav class="site-header-nav">
+      <a href="../">홈</a>
+      <a href="../blog/">스튜디오</a>
+      <a href="../server/" class="active">모니터링</a>
+      <a href="../server/accounts.html">계정 관리</a>
+    </nav>
+  </header>
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-label">관제 메뉴</div>
+          <a href="#sentiment" class="nav-item active" data-section="sentiment" data-icon="sentiment">여론 모니터링</a>
+          <a href="#keywords" class="nav-item" data-section="keywords" data-icon="keywords">키워드 노출</a>
+          <a href="#cafe" class="nav-item" data-section="cafe" data-icon="cafe">공식 카페</a>
+          <a href="#content" class="nav-item" data-section="content" data-icon="content">게시글 생성</a>
+          <a href="#telegram" class="nav-item" data-section="telegram" data-icon="telegram">텔레그램 알림</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-label">관리</div>
+          <a href="../blog/" class="nav-item" data-icon="studio">콘텐츠 스튜디오</a>
+          <a href="accounts.html" class="nav-item" data-icon="accounts">계정·권한 관리</a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-meta">
+          <div class="telegram-status" id="sidebarTelegramStatus">
+            <span class="telegram-status-dot"></span>
+            텔레그램 연결됨
+          </div>
+          v0.2 Prototype
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content monitor-main">
+      <div class="page-header flex-between">
+        <div>
+          <h1>블로그/카페 통합 관제</h1>
+          <p>지점별 여론·노출·순위를 실시간 모니터링하고 이슈 발생 시 텔레그램으로 보고서를 발송합니다</p>
+        </div>
+        <div class="flex-between gap-12">
+          <div class="live-status" id="refreshIndicator">
+            <span class="live-dot"></span>
+            <span>실시간 연결</span>
+            <span class="live-clock" id="liveClock">--:--:--</span>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="btnRefresh">새로고침</button>
+        </div>
+      </div>
+
+      <!-- FEATURE 01: Sentiment -->
+      <section class="monitor-section" id="section-sentiment">
+        <div class="feature-header">
+          <span class="feature-tag">FEATURE 01</span>
+          <h2>지점별 여론 모니터링</h2>
+          <p>블로그·카페 게시글을 AI가 분석하여 긍정·부정·중립 여론을 지점별로 집계합니다</p>
+        </div>
+
+        <div class="monitor-stats-row" id="sentimentStats"></div>
+
+        <div class="monitor-card monitor-card--dark">
+          <div class="monitor-card-title">옆커폰 · 지점별 여론 관제</div>
+          <div class="monitor-split">
+            <div class="monitor-split-left">
+              <table class="monitor-table" id="branchSentimentTable">
+                <thead>
+                  <tr>
+                    <th>가맹점</th>
+                    <th>블로그</th>
+                    <th>카페</th>
+                    <th>긍정률</th>
+                    <th>부정</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="monitor-split-right">
+              <div class="monitor-feed-header">수집·분석 게시글</div>
+              <div class="monitor-feed" id="sentimentFeed"></div>
+            </div>
+          </div>
+          <div class="monitor-alert-bar" id="sentimentAlertBar">
+            <div class="monitor-alert-text" id="sentimentAlertText"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURE 02: Keywords -->
+      <section class="monitor-section" id="section-keywords">
+        <div class="feature-header">
+          <span class="feature-tag">FEATURE 02</span>
+          <h2>지점별 검색 키워드 노출 모니터링</h2>
+          <p>지역 키워드(강남 휴대폰 성지, 역삼 아이폰16 등)의 네이버 통합검색·블로그 탭 순위를 매일 자동 추적합니다</p>
+        </div>
+
+        <div class="monitor-card monitor-card--dark">
+          <div class="monitor-card-toolbar">
+            <div class="monitor-card-title">옆커폰 · 키워드 노출 관제</div>
+            <div class="search-mode-toggle" id="searchModeToggle">
+              <button type="button" class="search-mode-btn active" data-mode="integrated">통합 검색</button>
+              <button type="button" class="search-mode-btn" data-mode="blog">블로그</button>
+            </div>
+          </div>
+          <div class="keyword-tabs" id="keywordTabs"></div>
+          <div class="monitor-split">
+            <div class="monitor-split-left">
+              <table class="monitor-table" id="keywordRankTable">
+                <thead>
+                  <tr>
+                    <th>가맹점</th>
+                    <th>통합검색</th>
+                    <th>블로그</th>
+                    <th>전일</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="monitor-split-right">
+              <div class="search-preview" id="searchPreview">
+                <div class="search-preview-query" id="searchPreviewQuery"></div>
+                <div class="search-preview-results" id="searchPreviewResults"></div>
+                <div class="search-preview-alert hidden" id="keywordExposureAlert"></div>
+              </div>
+            </div>
+          </div>
+          <div class="exposure-compare-bar" id="exposureCompareBar"></div>
+          <p class="monitor-card-footnote">노출 하락·미노출 지점은 텔레그램 알림 설정에 따라 자동 발송됩니다</p>
+        </div>
+      </section>
+
+      <!-- FEATURE 03: Cafe -->
+      <section class="monitor-section" id="section-cafe">
+        <div class="feature-header">
+          <span class="feature-tag">FEATURE 03</span>
+          <h2>공식 카페 모니터링</h2>
+          <p>부정글 즉시 대응, 질문글 답변 지연 감지로 구매 전환 기회를 놓치지 않습니다</p>
+        </div>
+
+        <div class="cafe-grid" id="cafePostGrid"></div>
+
+        <div class="monitor-card">
+          <div class="card-header">
+            <h2>카페 게시글 모니터링 현황</h2>
+          </div>
+          <div class="card-body" style="padding:0">
+            <table class="data-table" id="cafeMonitorTable">
+              <thead>
+                <tr>
+                  <th>유형</th>
+                  <th>제목</th>
+                  <th>지점</th>
+                  <th>상태</th>
+                  <th>등록일</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURE 04: Content Generation -->
+      <section class="monitor-section" id="section-content">
+        <div class="feature-header">
+          <span class="feature-tag">FEATURE 04</span>
+          <h2>AI 게시글 생성 모니터링</h2>
+          <p>콘텐츠 스튜디오에서 생성된 게시글의 설정값(지역·지점·스타일·이미지 등)과 생성·업로드 현황을 추적합니다</p>
+        </div>
+
+        <div class="monitor-stats-row" id="contentGenStats"></div>
+
+        <div class="monitor-card monitor-card--dark">
+          <div class="monitor-card-toolbar">
+            <div class="monitor-card-title">옆커폰 · AI 콘텐츠 생성 관제</div>
+            <div class="content-gen-filters">
+              <select id="contentFilterBranch" class="form-select form-select-sm content-filter">
+                <option value="all">전체 지점</option>
+              </select>
+              <select id="contentFilterStatus" class="form-select form-select-sm content-filter">
+                <option value="all">전체 상태</option>
+                <option value="generated">생성 완료</option>
+                <option value="uploaded">업로드 완료</option>
+                <option value="failed">실패</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <table class="monitor-table content-gen-table" id="contentGenTable">
+              <thead>
+                <tr>
+                  <th>생성 시각</th>
+                  <th>지점</th>
+                  <th>스타일</th>
+                  <th>설정 요약</th>
+                  <th>제목</th>
+                  <th>상태</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURE 05: Telegram -->
+      <section class="monitor-section" id="section-telegram">
+        <div class="feature-header">
+          <span class="feature-tag">FEATURE 05</span>
+          <h2>모니터링 결과 알림</h2>
+          <p>각 모니터링·이슈 사항을 텔레그램으로 실시간 보고서 형식으로 수신할 수 있습니다</p>
+        </div>
+
+        <div class="monitor-card telegram-auto-settings-card" id="telegramAutoSettingsCard">
+          <div class="card-header flex-between">
+            <h2>항목별 자동 발송 설정</h2>
+            <label class="tg-master-toggle">
+              <span class="toggle-switch toggle-switch--sm">
+                <input type="checkbox" id="tgGlobalEnabled" checked>
+                <span class="toggle-slider"></span>
+              </span>
+              <span class="tg-master-label">전체 자동 발송</span>
+            </label>
+          </div>
+          <div class="card-body telegram-alert-settings-wrap">
+            <div class="tg-settings-table-head">
+              <span></span>
+              <span>항목 · 발송 조건 (복수 선택)</span>
+            </div>
+            <div class="telegram-alert-settings" id="telegramAlertSettingsList"></div>
+          </div>
+          <div class="telegram-settings-footer">
+            <button type="button" class="btn btn-primary btn-sm" id="btnSaveTelegramSettings">설정 저장</button>
+          </div>
+        </div>
+
+        <div class="telegram-grid">
+          <div class="monitor-card telegram-config-card">
+            <div class="card-header">
+              <h2>텔레그램 연동 설정</h2>
+              <span class="badge badge-success" id="telegramBadge"><span class="status-dot online"></span> 연결됨</span>
+            </div>
+            <div class="card-body">
+              <div class="telegram-config-row">
+                <span class="telegram-config-label">봇</span>
+                <span class="telegram-config-value" id="telegramBotName">-</span>
+              </div>
+              <div class="telegram-config-row">
+                <span class="telegram-config-label">채팅방</span>
+                <span class="telegram-config-value" id="telegramChatName">-</span>
+              </div>
+              <div class="telegram-config-row">
+                <span class="telegram-config-label">구독자</span>
+                <span class="telegram-config-value" id="telegramSubscribers">-</span>
+              </div>
+              <div class="telegram-config-actions">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnTestTelegram">테스트 메시지 발송</button>
+                <button type="button" class="btn btn-primary btn-sm" id="btnDailyReport">일일 종합 보고서 발송</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="monitor-card">
+            <div class="card-header">
+              <h2>발송 이력</h2>
+            </div>
+            <div class="card-body telegram-history" id="telegramHistory"></div>
+          </div>
+        </div>
+
+        <div class="monitor-card monitor-card--telegram-preview">
+          <div class="card-header">
+            <h2>보고서 미리보기</h2>
+            <span class="text-muted" style="font-size:12px">마지막 발송 기준</span>
+          </div>
+          <div class="card-body">
+            <div class="telegram-message-preview" id="telegramPreview"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Content Generation Detail Modal -->
+  <div class="server-modal hidden" id="contentGenModal" aria-hidden="true">
+    <div class="server-modal-backdrop" data-close-modal></div>
+    <div class="server-modal-dialog server-modal-dialog--wide" role="dialog" aria-modal="true">
+      <div class="server-modal-header">
+        <h3 id="contentGenModalTitle">생성 상세</h3>
+        <button type="button" class="server-modal-close" data-close-modal aria-label="닫기">×</button>
+      </div>
+      <div class="server-modal-body" id="contentGenModalBody"></div>
+      <div class="server-modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal>닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Telegram Report Modal -->
+  <div class="server-modal hidden" id="telegramModal" aria-hidden="true">
+    <div class="server-modal-backdrop" data-close-modal></div>
+    <div class="server-modal-dialog" role="dialog" aria-modal="true">
+      <div class="server-modal-header">
+        <h3>텔레그램 보고서 발송</h3>
+        <button type="button" class="server-modal-close" data-close-modal aria-label="닫기">×</button>
+      </div>
+      <div class="server-modal-body">
+        <div class="telegram-send-preview" id="telegramSendPreview"></div>
+        <p class="telegram-send-note">발송 시 본사 관제방 구독자 전원에게 전달됩니다 (시뮬레이션)</p>
+      </div>
+      <div class="server-modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal>취소</button>
+        <button type="button" class="btn btn-telegram" id="btnConfirmTelegram">발송하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cafe Detail Modal -->
+  <div class="server-modal hidden" id="cafeModal" aria-hidden="true">
+    <div class="server-modal-backdrop" data-close-modal></div>
+    <div class="server-modal-dialog server-modal-dialog--wide" role="dialog" aria-modal="true">
+      <div class="server-modal-header">
+        <h3 id="cafeModalTitle">카페 게시글</h3>
+        <button type="button" class="server-modal-close" data-close-modal aria-label="닫기">×</button>
+      </div>
+      <div class="server-modal-body" id="cafeModalBody"></div>
+      <div class="server-modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal>닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/server-data.js"></script>
+  <script src="../assets/js/server.js"></script>
+</body>
+</html>
