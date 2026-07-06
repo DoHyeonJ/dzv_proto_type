@@ -747,9 +747,9 @@ const ServerApp = {
         const th = o.threshold;
         const thVal = th ? thresholds[th.key] ?? th.default : null;
         const thField = th
-          ? `<span class="tg-chip-threshold-wrap">
+          ? `<span class="tg-chip-value">
               <input type="number" class="tg-chip-threshold" data-threshold="${th.key}"
-                min="${th.min}" max="${th.max}" value="${thVal}" ${checked ? "" : "disabled"}>
+                min="${th.min}" max="${th.max}" value="${thVal}" inputmode="numeric" ${checked ? "" : "disabled"}>
               <span class="tg-chip-suffix">${th.suffix}</span>
             </span>`
           : "";
@@ -778,6 +778,12 @@ const ServerApp = {
       el.addEventListener("click", (e) => e.stopPropagation());
       el.addEventListener("change", () => this.collectTelegramAlertSettings());
     });
+
+    container.querySelectorAll('[data-field="schedule"]').forEach((el) => {
+      el.addEventListener("mousedown", (e) => e.stopPropagation());
+      el.addEventListener("click", (e) => e.stopPropagation());
+      el.addEventListener("change", () => this.collectTelegramAlertSettings());
+    });
   },
 
   renderTelegramAlertSettings() {
@@ -799,7 +805,14 @@ const ServerApp = {
         const isDaily = key === "daily";
         const active = this.isTelegramAutoEnabled(key);
         const controls = isDaily
-          ? `<input type="time" class="form-input form-input-sm tg-inline-input" data-field="schedule" value="${item.schedule || "09:00"}">`
+          ? `<div class="tg-trigger-chips">
+              <label class="tg-trigger-chip tg-schedule-chip is-checked">
+                <span class="tg-chip-label">발송 시각</span>
+                <span class="tg-chip-value tg-chip-value--time">
+                  <input type="time" class="tg-chip-time" data-field="schedule" value="${item.schedule || "09:00"}">
+                </span>
+              </label>
+            </div>`
           : this.renderTriggerChips(key, item);
 
         return `

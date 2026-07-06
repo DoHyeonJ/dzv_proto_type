@@ -827,9 +827,9 @@
 .tg-trigger-chip {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  height: 32px;
-  padding: 0 10px 0 8px;
+  gap: 6px;
+  min-height: 32px;
+  padding: 4px 10px 4px 8px;
   border-radius: 8px;
   border: 1px solid rgba(18, 16, 26, 0.1);
   background: #fff;
@@ -852,6 +852,10 @@
   color: #0369a1;
 }
 
+.tg-schedule-chip {
+  cursor: default;
+}
+
 .tg-chip-check {
   width: 14px;
   height: 14px;
@@ -863,48 +867,113 @@
 
 .tg-chip-label {
   white-space: nowrap;
-  line-height: 1;
+  line-height: 1.2;
 }
 
-.tg-chip-threshold-wrap {
+.tg-chip-value {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 1px;
+  height: 22px;
+  padding: 0 7px;
   margin-left: 2px;
-  padding-left: 6px;
-  border-left: 1px solid rgba(42, 171, 238, 0.2);
+  border-radius: 6px;
+  background: rgba(18, 16, 26, 0.05);
+  border: 1px solid rgba(18, 16, 26, 0.08);
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.tg-trigger-chip.is-checked .tg-chip-value {
+  background: rgba(42, 171, 238, 0.14);
+  border-color: rgba(42, 171, 238, 0.22);
 }
 
 .tg-chip-threshold {
-  width: 40px;
-  height: 22px;
-  padding: 0 4px;
+  width: 2.2ch;
+  min-width: 18px;
+  max-width: 32px;
+  height: 100%;
+  padding: 0;
   font-size: 12px;
   font-weight: 700;
+  line-height: 1;
   text-align: center;
-  border: 1px solid rgba(18, 16, 26, 0.12);
-  border-radius: 4px;
-  background: #fff;
-  color: var(--text-primary);
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.tg-chip-threshold::-webkit-outer-spin-button,
+.tg-chip-threshold::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.tg-chip-threshold:focus {
+  outline: none;
+}
+
+.tg-chip-value:focus-within {
+  background: rgba(42, 171, 238, 0.2);
+  border-color: rgba(42, 171, 238, 0.35);
+  box-shadow: 0 0 0 2px rgba(42, 171, 238, 0.12);
 }
 
 .tg-chip-threshold:disabled {
-  opacity: 0.45;
-  background: rgba(18, 16, 26, 0.04);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tg-trigger-chip:not(.is-checked) .tg-chip-value {
+  opacity: 0.55;
 }
 
 .tg-chip-suffix {
   font-size: 11px;
-  color: var(--text-muted);
+  color: inherit;
+  opacity: 0.72;
   font-weight: 600;
   white-space: nowrap;
+  line-height: 1;
 }
 
-.tg-inline-input {
-  width: 120px;
-  height: 32px;
-  font-size: 13px;
-  font-weight: 600;
+.tg-chip-value--time {
+  padding: 0 4px 0 6px;
+}
+
+.tg-chip-time {
+  width: 72px;
+  height: 100%;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.tg-chip-time:focus {
+  outline: none;
+}
+
+.tg-chip-time::-webkit-calendar-picker-indicator {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  padding: 0;
+  opacity: 0.55;
+  cursor: pointer;
+  filter: none;
+}
+
+.tg-trigger-chip.is-checked .tg-chip-time::-webkit-calendar-picker-indicator {
+  opacity: 0.75;
 }
 
 .btn-tg-preview-sm {
