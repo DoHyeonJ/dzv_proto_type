@@ -1,13 +1,4 @@
 const AccountsApp = {
-  accounts: [
-    { id: "acc-1", name: "김본사", email: "hq@yeopkeopon.com", role: "hq", branch: "본사", status: "active", lastLogin: "2026-07-06 09:12" },
-    { id: "acc-2", name: "이관리", email: "admin@yeopkeopon.com", role: "hq", branch: "본사", status: "active", lastLogin: "2026-07-06 08:45" },
-    { id: "acc-3", name: "박점주", email: "gangnam@yeopkeopon.com", role: "owner", branch: "강남역점", status: "active", lastLogin: "2026-07-05 18:30" },
-    { id: "acc-4", name: "최점주", email: "yeoksam@yeopkeopon.com", role: "owner", branch: "역삼점", status: "active", lastLogin: "2026-07-06 07:20" },
-    { id: "acc-5", name: "정매니저", email: "bundang@yeopkeopon.com", role: "manager", branch: "분당정자점", status: "active", lastLogin: "2026-07-04 14:00" },
-    { id: "acc-6", name: "한매니저", email: "ilsan@yeopkeopon.com", role: "manager", branch: "일산점", status: "inactive", lastLogin: "2026-06-28 11:15" }
-  ],
-
   roles: {
     hq: {
       label: "본사 관리자",
@@ -32,10 +23,15 @@ const AccountsApp = {
   deleteTargetId: null,
 
   init() {
+    DZV.ensureAccounts();
     this.renderRoleGuide();
     this.renderStats();
     this.renderTable();
     this.bindEvents();
+  },
+
+  get accounts() {
+    return DZV.getAccounts();
   },
 
   bindEvents() {
@@ -59,7 +55,13 @@ const AccountsApp = {
     const search = (document.getElementById("filterSearch")?.value || "").trim().toLowerCase();
     return this.accounts.filter((a) => {
       if (role !== "all" && a.role !== role) return false;
-      if (search && !a.name.toLowerCase().includes(search) && !a.email.toLowerCase().includes(search)) return false;
+      if (
+        search &&
+        !a.name.toLowerCase().includes(search) &&
+        !a.loginId.toLowerCase().includes(search)
+      ) {
+        return false;
+      }
       return true;
     });
   },
@@ -103,7 +105,7 @@ const AccountsApp = {
         return `
         <tr>
           <td><strong>${a.name}</strong></td>
-          <td>${a.email}</td>
+          <td><code class="account-login-id">${a.loginId}</code></td>
           <td><span class="badge ${role.badge}">${role.label}</span></td>
           <td>${a.branch}</td>
           <td><span class="badge ${a.status === "active" ? "badge-success" : "badge-neutral"}">${a.status === "active" ? "활성" : "비활성"}</span></td>
@@ -129,14 +131,21 @@ const AccountsApp = {
   openModal(id) {
     const isEdit = Boolean(id);
     const account = isEdit ? this.accounts.find((a) => a.id === id) : null;
+    const passwordHint = document.getElementById("accountPasswordHint");
+    const passwordInput = document.getElementById("accountPassword");
 
     document.getElementById("accountModalTitle").textContent = isEdit ? "계정 수정" : "계정 추가";
     document.getElementById("accountId").value = account?.id || "";
     document.getElementById("accountName").value = account?.name || "";
-    document.getElementById("accountEmail").value = account?.email || "";
+    document.getElementById("accountLoginId").value = account?.loginId || "";
     document.getElementById("accountRole").value = account?.role || "manager";
     document.getElementById("accountBranch").value = account?.branch === "본사" ? "" : account?.branch || "";
     document.getElementById("accountStatus").value = account?.status || "active";
+    passwordInput.value = "";
+    passwordInput.required = !isEdit;
+    if (passwordHint) {
+      passwordHint.textContent = isEdit ? "변경할 때만 입력하세요" : "4자 이상";
+    }
 
     this.toggleBranchField();
     document.getElementById("accountModal").classList.remove("hidden");
@@ -153,34 +162,84 @@ const AccountsApp = {
   async saveAccount() {
     const id = document.getElementById("accountId").value;
     const name = document.getElementById("accountName").value.trim();
-    const email = document.getElementById("accountEmail").value.trim();
+    const loginId = document.getElementById("accountLoginId").value.trim();
+    const password = document.getElementById("accountPassword").value;
     const role = document.getElementById("accountRole").value;
     const branchVal = document.getElementById("accountBranch").value;
     const branch = role === "hq" ? "본사" : branchVal || "미지정";
     const status = document.getElementById("accountStatus").value;
+
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(loginId)) {
+      DZV.showToast("아이디는 영문·숫자·밑줄 3~20자로 입력하세요", "error");
+      return;
+    }
+
+    if (!DZV.isLoginIdAvailable(loginId, id || null)) {
+      DZV.showToast("이미 사용 중인 아이디입니다", "error");
+      return;
+    }
+
+    if (!id && password.length < 4) {
+      DZV.showToast("비밀번호는 4자 이상이어야 합니다", "error");
+      return;
+    }
+
+    if (id && password && password.length < 4) {
+      DZV.showToast("비밀번호는 4자 이상이어야 합니다", "error");
+      return;
+    }
 
     const btn = document.getElementById("btnSaveAccount");
     btn.disabled = true;
     btn.textContent = "저장 중...";
     await DZV.delay(500);
 
+    const accounts = [...this.accounts];
+
     if (id) {
-      const account = this.accounts.find((a) => a.id === id);
+      const account = accounts.find((a) => a.id === id);
       if (account) {
-        Object.assign(account, { name, email, role, branch, status });
+        Object.assign(account, { name, loginId, role, branch, status });
+        if (password) account.password = password;
       }
       DZV.showToast("계정이 수정되었습니다", "success");
+      DZV.logActivity({
+        category: "account",
+        action: "계정 수정",
+        detail: `${name} (@${loginId}) 계정 정보를 수정했습니다`,
+        target: `@${loginId}`
+      });
     } else {
-      this.accounts.push({
+      accounts.push({
         id: `acc-${Date.now()}`,
         name,
-        email,
+        loginId,
+        password,
         role,
         branch,
         status,
         lastLogin: "-"
       });
       DZV.showToast("계정이 생성되었습니다", "success");
+      DZV.logActivity({
+        category: "account",
+        action: "계정 생성",
+        detail: `${name} (@${loginId}) 계정을 생성했습니다`,
+        target: `@${loginId}`
+      });
+    }
+
+    DZV.saveAccounts(accounts);
+
+    const currentUser = DZV.getCurrentUser();
+    if (id && currentUser.id === id) {
+      DZV.setCurrentUser({
+        id,
+        name,
+        loginId,
+        role,
+        branch
+      });
     }
 
     btn.disabled = false;
@@ -194,7 +253,7 @@ const AccountsApp = {
     const account = this.accounts.find((a) => a.id === id);
     if (!account) return;
     this.deleteTargetId = id;
-    document.getElementById("deleteConfirmText").textContent = `"${account.name}" (${account.email}) 계정을 삭제하시겠습니까?`;
+    document.getElementById("deleteConfirmText").textContent = `"${account.name}" (@${account.loginId}) 계정을 삭제하시겠습니까?`;
     document.getElementById("deleteModal").classList.remove("hidden");
     document.getElementById("deleteModal").setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
@@ -206,7 +265,17 @@ const AccountsApp = {
     btn.disabled = true;
     await DZV.delay(400);
 
-    this.accounts = this.accounts.filter((a) => a.id !== this.deleteTargetId);
+    const deleted = this.accounts.find((a) => a.id === this.deleteTargetId);
+    const accounts = this.accounts.filter((a) => a.id !== this.deleteTargetId);
+    DZV.saveAccounts(accounts);
+    if (deleted) {
+      DZV.logActivity({
+        category: "account",
+        action: "계정 삭제",
+        detail: `${deleted.name} (@${deleted.loginId}) 계정을 삭제했습니다`,
+        target: `@${deleted.loginId}`
+      });
+    }
     this.deleteTargetId = null;
     btn.disabled = false;
     this.closeModals();

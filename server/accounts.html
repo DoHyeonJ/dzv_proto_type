@@ -27,6 +27,7 @@
       <a href="../blog/">스튜디오</a>
       <a href="../server/">모니터링</a>
       <a href="../server/accounts.html" class="active">계정 관리</a>
+      <a href="activity.html" data-hq-only-header>활동 관리</a>
     </nav>
   </header>
 
@@ -45,6 +46,7 @@
           <div class="nav-section-label">관리</div>
           <a href="../blog/" class="nav-item" data-icon="studio">콘텐츠 스튜디오</a>
           <a href="accounts.html" class="nav-item active" data-icon="accounts">계정·권한 관리</a>
+          <a href="activity.html" class="nav-item" data-icon="activity" data-hq-only>활동 관리</a>
         </div>
       </nav>
       <div class="sidebar-footer"><div class="sidebar-footer-meta">v0.2 Prototype</div></div>
@@ -97,7 +99,7 @@
               <option value="owner">점주</option>
               <option value="manager">지점 매니저</option>
             </select>
-            <input type="search" id="filterSearch" class="form-input form-input-sm" placeholder="이름·이메일 검색">
+            <input type="search" id="filterSearch" class="form-input form-input-sm" placeholder="이름·아이디 검색">
           </div>
         </div>
         <div class="card-body" style="padding:0">
@@ -105,7 +107,7 @@
             <thead>
               <tr>
                 <th>이름</th>
-                <th>이메일</th>
+                <th>아이디</th>
                 <th>등급</th>
                 <th>소속 지점</th>
                 <th>상태</th>
@@ -135,8 +137,14 @@
           <input type="text" id="accountName" class="form-input" required placeholder="홍길동">
         </div>
         <div class="form-group">
-          <label for="accountEmail">이메일</label>
-          <input type="email" id="accountEmail" class="form-input" required placeholder="user@yeopkeopon.com">
+          <label for="accountLoginId">아이디</label>
+          <input type="text" id="accountLoginId" class="form-input" required placeholder="admin" pattern="[a-zA-Z0-9_]{3,20}" autocomplete="username">
+          <p class="form-hint">영문·숫자·밑줄 3~20자</p>
+        </div>
+        <div class="form-group">
+          <label for="accountPassword">비밀번호</label>
+          <input type="password" id="accountPassword" class="form-input" autocomplete="new-password">
+          <p class="form-hint" id="accountPasswordHint">4자 이상</p>
         </div>
         <div class="form-group">
           <label for="accountRole">관리 등급</label>

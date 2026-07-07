@@ -821,13 +821,19 @@ const BlogApp = {
       formatTone: this.learnedFormat?.tone || "친근하고 신뢰감 있는 존댓말",
       imageCount: this.uploadedImages.length,
       status,
-      createdBy: "스튜디오 사용자",
+      createdBy: DZV.getCurrentUser().name,
       createdAt: new Date().toISOString(),
       uploadedAt: null
     };
     logs.unshift(entry);
     DZV.saveState("server_generation_logs", logs.slice(0, 50));
     this.generatedPost.logId = logId;
+    DZV.logActivity({
+      category: "content",
+      action: "게시글 생성",
+      detail: `${this.generatedPost.branch} ${this.generatedPost.style} 게시글을 생성했습니다`,
+      target: this.generatedPost.title
+    });
   },
 
   reportToServer() {
@@ -839,15 +845,12 @@ const BlogApp = {
       DZV.saveState("server_generation_logs", logs);
     }
 
-    const activityLogs = DZV.loadState("server_activity", []);
-    activityLogs.unshift({
-      type: "upload",
-      branch: this.generatedPost.branch,
-      title: this.generatedPost.title,
-      style: this.generatedPost.style,
-      time: new Date().toISOString()
+    DZV.logActivity({
+      category: "content",
+      action: "게시글 업로드",
+      detail: `"${this.generatedPost.title}" 게시글을 블로그에 업로드했습니다`,
+      target: this.generatedPost.branch
     });
-    DZV.saveState("server_activity", activityLogs.slice(0, 50));
 
     const stats = DZV.loadState("server_stats", { totalPosts: 128, todayPosts: 5 });
     stats.totalPosts += 1;

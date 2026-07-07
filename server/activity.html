@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>활동 관리 - 옆커폰</title>
+  <link rel="icon" type="image/png" href="../assets/images/logo.png">
+  <link rel="apple-touch-icon" href="../assets/images/logo.png">
+  <link rel="stylesheet" href="../assets/css/fonts.css">
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/server.css">
+  <link rel="stylesheet" href="../assets/css/activity.css">
+</head>
+<body>
+  <div class="prototype-notice" role="status">
+    <p>본 프로젝트는 프로토타입이며, 실제 데이터를 사용하지 않고 동작 예시만 표현합니다. 기능은 실제로 동작하지 않습니다.</p>
+  </div>
+  <header class="site-header">
+    <a href="../" class="site-header-brand">
+      <div class="site-header-logo">
+        <img src="../assets/images/logo.png" alt="옆커폰">
+      </div>
+      <span>옆커폰 · 활동 관리</span>
+    </a>
+    <nav class="site-header-nav">
+      <a href="../">홈</a>
+      <a href="../blog/">스튜디오</a>
+      <a href="../server/">모니터링</a>
+      <a href="../server/accounts.html">계정 관리</a>
+      <a href="activity.html" class="active" data-hq-only-header>활동 관리</a>
+    </nav>
+  </header>
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-label">관제 메뉴</div>
+          <a href="../server/#sentiment" class="nav-item" data-icon="sentiment">여론 모니터링</a>
+          <a href="../server/#keywords" class="nav-item" data-icon="keywords">키워드 노출</a>
+          <a href="../server/#cafe" class="nav-item" data-icon="cafe">공식 카페</a>
+          <a href="../server/#content" class="nav-item" data-icon="content">게시글 생성</a>
+          <a href="../server/#telegram" class="nav-item" data-icon="telegram">텔레그램 알림</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-label">관리</div>
+          <a href="../blog/" class="nav-item" data-icon="studio">콘텐츠 스튜디오</a>
+          <a href="accounts.html" class="nav-item" data-icon="accounts">계정·권한 관리</a>
+          <a href="activity.html" class="nav-item active" data-icon="activity" data-hq-only>활동 관리</a>
+        </div>
+      </nav>
+      <div class="sidebar-footer"><div class="sidebar-footer-meta">v0.2 Prototype</div></div>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header flex-between">
+        <div>
+          <h1>활동 관리</h1>
+          <p>계정별 시스템 이용 기록을 조회합니다 (본사 관리자 전용)</p>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshActivity">새로고침</button>
+      </div>
+
+      <div class="grid-4 mb-16">
+        <div class="card stat-card">
+          <div class="stat-card-label">전체 활동</div>
+          <div class="stat-card-value" id="statTotalActivity">-</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-card-label">오늘 활동</div>
+          <div class="stat-card-value" id="statTodayActivity">-</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-card-label">활동 계정</div>
+          <div class="stat-card-value" id="statActiveAccounts">-</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-card-label">콘텐츠 활동</div>
+          <div class="stat-card-value" id="statContentActivity">-</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>활동 로그</h2>
+          <div class="activity-filters">
+            <select id="filterCategory" class="form-select form-select-sm">
+              <option value="all">전체 유형</option>
+              <option value="account">계정</option>
+              <option value="content">콘텐츠</option>
+              <option value="monitor">모니터링</option>
+              <option value="telegram">텔레그램</option>
+              <option value="auth">인증</option>
+            </select>
+            <select id="filterAccount" class="form-select form-select-sm">
+              <option value="all">전체 계정</option>
+            </select>
+            <input type="search" id="filterActivitySearch" class="form-input form-input-sm" placeholder="활동·대상 검색">
+          </div>
+        </div>
+        <div class="card-body activity-log-body">
+          <div class="activity-log" id="activityLog"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/activity.js"></script>
+</body>
+</html>

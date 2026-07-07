@@ -26,6 +26,7 @@
         <a href="blog/">스튜디오</a>
         <a href="server/">모니터링</a>
         <a href="server/accounts.html">계정 관리</a>
+        <a href="server/activity.html" data-hq-only-header>활동 관리</a>
       </nav>
     </header>
 
@@ -66,6 +67,13 @@
       옆커폰 Server Prototype · GitHub Pages Demo · 추후 EXE 배포 예정
     </div>
   </div>
+  <script src="assets/js/common.js"></script>
   <script src="assets/js/effects.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      DZV.ensureAccounts();
+      DZV.applyRoleBasedNav();
+    });
+  </script>
 </body>
 </html>

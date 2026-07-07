@@ -56,6 +56,21 @@
   gap: 4px;
 }
 
+.account-login-id {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-deep);
+  background: rgba(124, 58, 237, 0.08);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.form-hint {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
 .btn-ghost {
   color: var(--text-secondary);
   font-weight: 600;

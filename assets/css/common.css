@@ -365,12 +365,35 @@ textarea {
 
 .app-layout.sidebar-collapsed .nav-section-label,
 .app-layout.sidebar-collapsed .nav-item-text,
-.app-layout.sidebar-collapsed .sidebar-footer-meta {
+.app-layout.sidebar-collapsed .sidebar-footer-meta,
+.app-layout.sidebar-collapsed .sidebar-account-details,
+.app-layout.sidebar-collapsed .sidebar-account-action-text {
   opacity: 0;
   width: 0;
   overflow: hidden;
   white-space: nowrap;
   pointer-events: none;
+}
+
+.app-layout.sidebar-collapsed .sidebar-account-wrap {
+  align-items: center;
+}
+
+.app-layout.sidebar-collapsed .sidebar-account {
+  justify-content: center;
+  padding: 8px 6px;
+  gap: 0;
+}
+
+.app-layout.sidebar-collapsed .sidebar-account-action {
+  justify-content: center;
+  padding: 8px;
+}
+
+.app-layout.sidebar-collapsed .sidebar-account-avatar {
+  width: 36px;
+  height: 36px;
+  font-size: 14px;
 }
 
 .app-layout.sidebar-collapsed .nav-section-label {
@@ -473,10 +496,160 @@ textarea {
 }
 
 .sidebar-footer {
-  padding: 14px 16px;
+  padding: 12px 12px 14px;
   border-top: 1px solid rgba(155, 137, 207, 0.1);
   font-size: 11px;
   color: rgba(155, 137, 207, 0.45);
+}
+
+.sidebar-account-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.sidebar-account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(155, 137, 207, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.sidebar-account:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(155, 137, 207, 0.28);
+  transform: translateY(-1px);
+}
+
+.sidebar-account-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(155, 137, 207, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 11px;
+  font-weight: 600;
+  transition: all var(--transition);
+}
+
+.sidebar-account-action svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.sidebar-account-action:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(155, 137, 207, 0.24);
+}
+
+.sidebar-account-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #7c3aed, #6366f1);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+}
+
+.sidebar-account-avatar--hq {
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.sidebar-account-avatar--owner {
+  background: linear-gradient(135deg, #f59e0b, #eab308);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.sidebar-account-avatar--manager {
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.sidebar-account-details {
+  min-width: 0;
+  flex: 1;
+  transition: opacity var(--transition), width var(--transition);
+}
+
+.sidebar-account-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-account-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  min-width: 0;
+}
+
+.sidebar-account-role {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sidebar-account-role--hq {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.18);
+}
+
+.sidebar-account-role--owner {
+  color: #fcd34d;
+  background: rgba(245, 158, 11, 0.18);
+}
+
+.sidebar-account-role--manager {
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.18);
+}
+
+.sidebar-account-branch {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-account-login {
+  margin-top: 3px;
+  font-size: 10px;
+  color: rgba(155, 137, 207, 0.8);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar-footer-meta {
@@ -976,6 +1149,99 @@ textarea {
 
 .data-table tr:hover td {
   background: rgba(124, 58, 237, 0.04);
+}
+
+/* App Modal (공통) */
+.app-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.app-modal.hidden {
+  display: none;
+}
+
+.app-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(18, 16, 26, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.app-modal-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  animation: fadeSlideUp 0.3s ease both;
+}
+
+.app-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-modal-header h3 {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.app-modal-close {
+  width: 32px;
+  height: 32px;
+  font-size: 22px;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+}
+
+.app-modal-close:hover {
+  background: var(--accent-light);
+}
+
+.app-modal-body {
+  padding: 20px 22px;
+}
+
+.app-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+}
+
+.app-modal-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.app-form-group {
+  margin-bottom: 14px;
+}
+
+.app-form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+body.modal-open {
+  overflow: hidden;
 }
 
 /* Toast */

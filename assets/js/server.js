@@ -612,6 +612,12 @@ const ServerApp = {
     btn.textContent = "발송하기";
     this.closeModals();
     DZV.showToast("텔레그램 보고서가 발송되었습니다", "success");
+    DZV.logActivity({
+      category: "telegram",
+      action: "보고서 발송",
+      detail: this.pendingTelegramReport.title || "텔레그램 보고서를 발송했습니다",
+      target: this.pendingTelegramReport.type
+    });
   },
 
 
@@ -627,6 +633,12 @@ const ServerApp = {
     };
     this.telegramHistory.unshift(entry);
     this.renderTelegramHistory();
+    DZV.logActivity({
+      category: "telegram",
+      action: "테스트 메시지 발송",
+      detail: "텔레그램 연동 테스트 메시지를 발송했습니다",
+      target: "본사 관제방"
+    });
   },
 
   loadTelegramAlertSettings() {
@@ -677,6 +689,12 @@ const ServerApp = {
     DZV.saveState("telegram_alert_settings", this.telegramAlertSettings);
     this.renderTelegramAlertSettings();
     DZV.showToast("텔레그램 자동 발송 설정이 저장되었습니다", "success");
+    DZV.logActivity({
+      category: "telegram",
+      action: "텔레그램 설정 저장",
+      detail: "항목별 자동 발송 조건을 저장했습니다",
+      target: "텔레그램 알림"
+    });
   },
 
   collectTelegramAlertSettings() {
@@ -904,6 +922,12 @@ const ServerApp = {
     this.renderContentGenTable();
     indicator.classList.remove("syncing");
     DZV.showToast("모니터링 데이터가 갱신되었습니다", "info");
+    DZV.logActivity({
+      category: "monitor",
+      action: "모니터링 새로고침",
+      detail: "실시간 모니터링 데이터를 수동 갱신했습니다",
+      target: "통합 관제"
+    });
   },
 
   simulateTick() {
